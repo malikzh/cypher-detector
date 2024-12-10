@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from algo import aes, blowfish, des
 import math
 
@@ -42,5 +43,6 @@ for algo in ALGOS:
     print('Saving ciphers at: ' + filepath)
 
     with open(filepath, 'w') as f:
-        f.writelines(ciphers)
+        for cipher in ciphers:
+            f.write(cipher + '\n')
 
