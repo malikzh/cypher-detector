@@ -18,6 +18,9 @@ class Dataset(torch.utils.data.Dataset):
 
             with open(fullpath, 'r') as f:
                 for item in f.readlines():
+                    if item == '':
+                        continue
+
                     value = [x / 255.0 for x in bytes.fromhex(item)]
                     self.DATA.append([label, value])
 
