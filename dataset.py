@@ -1,3 +1,4 @@
+import numpy as np
 import torch
 from os import listdir
 from os.path import isfile, join
@@ -22,6 +23,11 @@ class Dataset(torch.utils.data.Dataset):
                         continue
 
                     value = [x / 255.0 for x in bytes.fromhex(item)]
+
+                    if (len(value) > 256):
+                        value = value[:256]
+
+                    assert len(value) == 256, "Size must be 256, but has: {}".format(len(value))
                     self.DATA.append([label, value])
 
     def __len__(self):
@@ -29,4 +35,4 @@ class Dataset(torch.utils.data.Dataset):
 
     def __getitem__(self, index):
         item = self.DATA[index]
-        return item[1], item[0]
+        return np.array(item[1], dtype='float32'), item[0]

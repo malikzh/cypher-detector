@@ -1,16 +1,21 @@
 from torch import nn
 
 class Model(nn.Module):
-    INPUT_SIZE = 128
-    HIDDEN_SIZE = 100
+    INPUT_SIZE = 256
 
-    def __init__(self):
-        self.rnn = nn.RNN(self.INPUT_SIZE, self.HIDDEN_SIZE, batch_first=True)
-        self.linear = nn.Linear(self.HIDDEN_SIZE, 80)
-        self.relu = nn.Tanh()
-        self.pool = nn.MaxPool1d(64)
-        self.linear2 = nn.Linear(64)
-        self.softmax = nn.Softmax(dim=1)
+    def __init__(self, classes):
+        super(Model, self).__init__()
+        self.rnn = nn.RNN(self.INPUT_SIZE, 128, batch_first=True)
+        self.linear = nn.Linear(128, 100)
+        self.tanh = nn.Tanh()
+        #self.pool = nn.MaxPool1d(64)
+        self.linear2 = nn.Linear(100, classes)
+        self.softmax = nn.Softmax()
 
-    def forward(self, x):
-        pass
+    def forward(self, batch):
+        batch, _ = self.rnn(batch)
+        batch = self.linear(batch)
+        batch = self.tanh(batch)
+        batch = self.linear2(batch)
+        batch = self.softmax(batch)
+        return batch

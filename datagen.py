@@ -14,7 +14,7 @@ ALGOS = [
     des.DesAlgo(),
 ]
 
-BYTES_QUANTITY = 128
+BYTES_QUANTITY = 256
 
 PATH = '_dataset'
 
@@ -35,6 +35,11 @@ for algo in ALGOS:
 
         if diff > 0:
             bstring += b'\x00' * diff
+        elif diff < 0:
+            bstring = bstring[:abs(diff)]
+
+        assert len(bstring) == BYTES_QUANTITY, ("Text has {} bytes length, but must have {} bytes"
+                                                .format(len(bstring), BYTES_QUANTITY))
 
         cyphertext = algo.encrypt(bstring)
         ciphers.append(cyphertext.hex())
