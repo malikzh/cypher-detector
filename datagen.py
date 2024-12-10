@@ -15,7 +15,7 @@ ALGOS = [
 
 BYTES_QUANTITY = 128
 
-PATH = './dataset'
+PATH = '_dataset'
 
 bits = round(math.log2(CIPHERS_QUANTITY))
 
