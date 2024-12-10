@@ -20,7 +20,6 @@ class Dataset(torch.utils.data.Dataset):
                 for item in f.readlines():
                     value = [x / 255.0 for x in bytes.fromhex(item)]
                     self.DATA.append([label, value])
-            break
 
     def __len__(self):
         return len(self.DATA)
