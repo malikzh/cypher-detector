@@ -8,6 +8,11 @@ class Dataset(torch.utils.data.Dataset):
     PATH = '_dataset'
     LABELS = set()
     DATA = []
+    CLASSES = {
+        'AES': np.array([0.0, 0.0, 1.0]),
+        'Blowfish': np.array([0.0, 1.0, 0.0]),
+        'DES': np.array([1.0, 0.0, 0.0]),
+    }
 
     def __init__(self):
         for filename in listdir(self.PATH):
@@ -35,4 +40,4 @@ class Dataset(torch.utils.data.Dataset):
 
     def __getitem__(self, index):
         item = self.DATA[index]
-        return np.array(item[1], dtype='float32'), item[0]
+        return np.array(item[1], dtype='float32'), self.CLASSES[item[0]]

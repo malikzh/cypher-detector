@@ -28,12 +28,30 @@ optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE, weight_decay=
 loss_fn = torch.nn.CrossEntropyLoss()
 
 for epoch in range(EPOCHS):
-    print('Epoch {}/{}'.format(epoch, EPOCHS))
+    print('Epoch {}/{}'.format(epoch+1, EPOCHS))
 
     model.train(True)
 
+    train_loss = 0.0
     for i, (X, Y) in enumerate(train_loader):
         optimizer.zero_grad()
         predicted_Y = model(X)
-        print(predicted_Y)
-        exit()
+        loss = loss_fn(predicted_Y, Y)
+        loss.backward()
+        optimizer.step()
+        train_loss += loss.item()
+
+    model.eval()
+    val_loss = 0.0
+    correct = 0
+    total = 0
+    with torch.no_grad():
+        for i, (X, Y) in enumerate(val_loader):
+            predicted_Y = model(X)
+            loss = loss_fn(predicted_Y, Y)
+            val_loss += loss.item()
+            correct += (predicted_Y == Y).sum().item()
+            total += Y.size(0)
+
+    print('Train Loss: {:.4f}, Val Loss: {:.4f}'.format(train_loss / len(train_loader), val_loss / len(val_loader)))
+    print('Accuracy: {}%'.format(100 * correct / total))
