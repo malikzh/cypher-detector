@@ -5,9 +5,9 @@ class Model(nn.Module):
 
     def __init__(self, classes):
         super(Model, self).__init__()
-        self.rnn = nn.RNN(self.INPUT_SIZE, 128, batch_first=True)
+        self.rnn = nn.GRU(self.INPUT_SIZE, 128, batch_first=True)
         self.linear = nn.Linear(128, 100)
-        self.tanh = nn.Tanh()
+        self.tanh = nn.ReLU()
         #self.pool = nn.MaxPool1d(64)
         self.linear2 = nn.Linear(100, classes)
         self.softmax = nn.Softmax()
