@@ -14,8 +14,10 @@ class Dataset(torch.utils.data.Dataset):
         'DES': np.array([1.0, 0.0, 0.0]),
     }
 
-    def __init__(self):
-        for filename in listdir(self.PATH):
+    CLASSES_NAMES = ['DES', 'Blowfish', 'AES']
+
+    def __init__(self, file_full_path = None):
+        for filename in (listdir(self.PATH) if file_full_path is None else [file_full_path]):
             fullpath = join(self.PATH, filename)
             label = Path(filename).stem
             self.LABELS.add(label)

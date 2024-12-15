@@ -1,8 +1,8 @@
 from torch import nn
 
-class CypherDetectorModel(nn.Module):
+class CypherDetectorRNNModel(nn.Module):
     def __init__(self, classes):
-        super(CypherDetectorModel, self).__init__()
+        super(CypherDetectorRNNModel, self).__init__()
 
         self.gru = nn.GRU(16, 8, batch_first=True)
         self.linear1 = nn.Linear(128, classes)
@@ -11,6 +11,21 @@ class CypherDetectorModel(nn.Module):
 
     def forward(self, batch):
         batch, _ = self.gru(batch)
+        batch = self.flatten(batch)
+        batch = self.linear1(batch)
+        batch = self.softmax(batch)
+        return batch
+
+
+class CypherDetectorSimpleModel(nn.Module):
+    def __init__(self, classes):
+        super(CypherDetectorSimpleModel, self).__init__()
+
+        self.flatten = nn.Flatten()
+        self.linear1 = nn.Linear(256, classes)
+        self.softmax = nn.Softmax(dim=1)
+
+    def forward(self, batch):
         batch = self.flatten(batch)
         batch = self.linear1(batch)
         batch = self.softmax(batch)
