@@ -2,7 +2,7 @@
 
 from torch.utils.data import DataLoader, random_split
 from dataset import Dataset
-from model import Model
+from model import CypherDetectorModel
 from config import get_configuration
 import torch
 
@@ -22,7 +22,7 @@ val_loader = DataLoader(val_dataset, batch_size=cfg['BATCH_SIZE'], generator=tor
 
 
 # prepare model
-model = Model(len(dataset.LABELS))
+model = CypherDetectorModel(len(dataset.LABELS))
 optimizer = torch.optim.Adam(model.parameters(), lr=cfg['LEARNING_RATE'], weight_decay=cfg['WEIGHT_DECAY'])
 loss_fn = torch.nn.CrossEntropyLoss()
 
@@ -32,6 +32,7 @@ for epoch in range(cfg['EPOCHS']):
     model.train(True)
 
     train_loss = 0.0
+    print('Training...')
     for i, (X, Y) in enumerate(train_loader):
         optimizer.zero_grad()
         predicted_Y = model(X)
@@ -44,13 +45,14 @@ for epoch in range(cfg['EPOCHS']):
     val_loss = 0.0
     correct = 0
     total = 0
+    print('Validating...')
     with torch.no_grad():
         for i, (X, Y) in enumerate(val_loader):
             predicted_Y = model(X)
             loss = loss_fn(predicted_Y, Y)
             val_loss += loss.item()
-            correct += (predicted_Y == Y).sum().item()
+            correct += (torch.argmax(predicted_Y, dim=1) == torch.argmax(Y, dim=1)).float().sum()
             total += Y.size(0)
 
     print('Train Loss: {:.4f}, Val Loss: {:.4f}'.format(train_loss / len(train_loader), val_loss / len(val_loader)))
-    print('Accuracy: {}%'.format(100 * correct / total))
+    print('Val Accuracy: {}%'.format(100 * correct / total))
