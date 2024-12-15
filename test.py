@@ -16,7 +16,7 @@ FILE = 'Blowfish.txt' # Change file for testing
 
 model = CypherDetectorRNNModel(3) # IMPORTANT: 3 classes
 
-model.load_state_dict(torch.load('model.pth', weights_only=True))
+model.load_state_dict(torch.load('model0.pth', weights_only=True))
 model.eval()
 
 dataset = Dataset(FILE)
