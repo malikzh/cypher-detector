@@ -40,4 +40,6 @@ class Dataset(torch.utils.data.Dataset):
 
     def __getitem__(self, index):
         item = self.DATA[index]
-        return np.array(item[1], dtype='float32'), self.CLASSES[item[0]]
+        arr = np.array(item[1], dtype='float32')
+        arr = np.reshape(arr, (16, 16))
+        return arr, self.CLASSES[item[0]]
