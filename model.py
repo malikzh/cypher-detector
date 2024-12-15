@@ -4,7 +4,7 @@ class CypherDetectorRNNModel(nn.Module):
     def __init__(self, classes):
         super(CypherDetectorRNNModel, self).__init__()
 
-        self.gru = nn.GRU(16, 8, batch_first=True)
+        self.gru = nn.GRU(16, 8, batch_first=True, num_layers=2, dropout=0.3)
         self.linear1 = nn.Linear(128, classes)
         self.flatten = nn.Flatten()
         self.softmax = nn.Softmax(dim=1)

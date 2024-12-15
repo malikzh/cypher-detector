@@ -12,9 +12,9 @@ cfg = get_configuration()
 torch.set_default_device(cfg['DEVICE'])
 print(f'Selected device: {cfg["DEVICE"]}')
 
-FILE = 'DES.txt' # Change file for testing
+FILE = 'Blowfish.txt' # Change file for testing
 
-model = CypherDetectorSimpleModel(3) # IMPORTANT: 3 classes
+model = CypherDetectorRNNModel(3) # IMPORTANT: 3 classes
 
 model.load_state_dict(torch.load('model.pth', weights_only=True))
 model.eval()
@@ -34,4 +34,4 @@ with torch.no_grad():
         correct += (predicted_class == real_class).float().sum()
         total += Y.size(0)
 
-print(f'Total accuracy: {correct / total * 100.0:2f} Correct items: {correct} / Total items: {total}')
+print(f'Total accuracy: {correct / total * 100.0:.2f}% Correct items: {int(correct)} / Total items: {int(total)}')

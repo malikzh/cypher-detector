@@ -9,9 +9,9 @@ class Dataset(torch.utils.data.Dataset):
     LABELS = set()
     DATA = []
     CLASSES = {
-        'AES': np.array([0.0, 0.0, 1.0]),
-        'Blowfish': np.array([0.0, 1.0, 0.0]),
         'DES': np.array([1.0, 0.0, 0.0]),
+        'Blowfish': np.array([0.0, 1.0, 0.0]),
+        'AES': np.array([0.0, 0.0, 1.0]),
     }
 
     CLASSES_NAMES = ['DES', 'Blowfish', 'AES']

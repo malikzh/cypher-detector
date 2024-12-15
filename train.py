@@ -22,7 +22,7 @@ val_loader = DataLoader(val_dataset, batch_size=cfg['BATCH_SIZE'], generator=tor
 
 
 # prepare model
-model = CypherDetectorSimpleModel(len(dataset.LABELS))
+model = CypherDetectorRNNModel(len(dataset.LABELS))
 optimizer = torch.optim.Adam(model.parameters(), lr=cfg['LEARNING_RATE'], weight_decay=cfg['WEIGHT_DECAY'])
 loss_fn = torch.nn.CrossEntropyLoss()
 best_loss = float('inf')
