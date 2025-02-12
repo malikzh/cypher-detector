@@ -60,11 +60,13 @@ for epoch in range(cfg['EPOCHS']):
 
     mean_train_loss = train_loss / len(train_loader)
     mean_val_loss = val_loss / len(val_loader)
+    accuracy = 100 * correct / total
 
     writer.add_scalar("Loss/train", mean_train_loss, epoch)
     writer.add_scalar("Loss/validation", mean_val_loss, epoch)
+    writer.add_scalar("Accuracy/validation %", accuracy, epoch)
     print('Train Loss: {:.4f}, Val Loss: {:.4f}'.format(mean_train_loss, mean_val_loss))
-    print('Val Accuracy: {:.2f}%'.format(100 * correct / total))
+    print('Val Accuracy: {:.2f}%'.format(accuracy))
     
     if val_loss < best_loss:
         print('Saving model...')
