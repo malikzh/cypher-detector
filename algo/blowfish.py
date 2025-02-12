@@ -3,7 +3,7 @@ from . import Algo
 
 class BlowfishAlgo(Algo):
     NAME = 'Blowfish'
-    KEY = bytes.fromhex('8de2a7e46e028887423b5c91b1e8065b')
+    KEY = bytes.fromhex('8de2a7e46e028887423b5c91b1e8065b') # 128 bit
 
     def encrypt(self, text: bytes) -> bytes:
         cipher = Blowfish.new(self.KEY, Blowfish.MODE_CBC)
