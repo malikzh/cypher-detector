@@ -6,7 +6,10 @@ from model import CypherDetectorRNNModel, CypherDetectorSimpleModel
 from config import get_configuration
 import torch
 
+from torch.utils.tensorboard import SummaryWriter
+
 # Initialize
+writer = SummaryWriter()
 cfg = get_configuration()
 
 torch.set_default_device(cfg['DEVICE'])
@@ -55,10 +58,17 @@ for epoch in range(cfg['EPOCHS']):
             correct += (torch.argmax(predicted_Y, dim=1) == torch.argmax(Y, dim=1)).float().sum()
             total += Y.size(0)
 
-    print('Train Loss: {:.4f}, Val Loss: {:.4f}'.format(train_loss / len(train_loader), val_loss / len(val_loader)))
+    mean_train_loss = train_loss / len(train_loader)
+    mean_val_loss = val_loss / len(val_loader)
+
+    writer.add_scalar("Loss/train", mean_train_loss, epoch)
+    writer.add_scalar("Loss/validation", mean_val_loss, epoch)
+    print('Train Loss: {:.4f}, Val Loss: {:.4f}'.format(mean_train_loss, mean_val_loss))
     print('Val Accuracy: {:.2f}%'.format(100 * correct / total))
     
     if val_loss < best_loss:
         print('Saving model...')
         torch.save(model.state_dict(), 'model.pth')
+
+    writer.flush()
     

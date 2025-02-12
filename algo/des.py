@@ -1,10 +1,10 @@
-from Crypto.Cipher import DES
+from Crypto.Cipher import DES3
 from . import Algo
 
 class DesAlgo(Algo):
     NAME = 'DES'
-    KEY = bytes.fromhex('071c6539a1fdf779') # 8 bytes
+    KEY = bytes.fromhex('6052bfebee999bbb77a641b2ca73931a') # 128 bit
 
     def encrypt(self, text: bytes) -> bytes:
-        cipher = DES.new(self.KEY, DES.MODE_ECB)
+        cipher = DES3.new(self.KEY, DES3.MODE_ECB)
         return cipher.encrypt(text)
