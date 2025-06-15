@@ -28,7 +28,7 @@ def model_eval(S_u, S_b, k):
 
 # Main Model parameters
 k = 2.0
-r_min = 0.20
+r_min = 0.2
 r_max = 2.5
 #######################
 
