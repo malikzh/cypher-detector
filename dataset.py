@@ -9,13 +9,15 @@ class Dataset(torch.utils.data.Dataset):
     LABELS = set()
     DATA = []
     CLASSES = {
-        'AES': np.array([0.0, 0.0, 1.0]),
-        'Blowfish': np.array([0.0, 1.0, 0.0]),
         'DES': np.array([1.0, 0.0, 0.0]),
+        'Blowfish': np.array([0.0, 1.0, 0.0]),
+        'AES': np.array([0.0, 0.0, 1.0]),
     }
 
-    def __init__(self):
-        for filename in listdir(self.PATH):
+    CLASSES_NAMES = ['DES', 'Blowfish', 'AES']
+
+    def __init__(self, file_full_path = None):
+        for filename in (listdir(self.PATH) if file_full_path is None else [file_full_path]):
             fullpath = join(self.PATH, filename)
             label = Path(filename).stem
             self.LABELS.add(label)
@@ -40,4 +42,6 @@ class Dataset(torch.utils.data.Dataset):
 
     def __getitem__(self, index):
         item = self.DATA[index]
-        return np.array(item[1], dtype='float32'), self.CLASSES[item[0]]
+        arr = np.array(item[1], dtype='float32')
+        arr = np.reshape(arr, (16, 16))
+        return arr, self.CLASSES[item[0]]

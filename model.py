@@ -1,21 +1,32 @@
 from torch import nn
 
-class Model(nn.Module):
-    INPUT_SIZE = 256
-
+class CypherDetectorRNNModel(nn.Module):
     def __init__(self, classes):
-        super(Model, self).__init__()
-        self.rnn = nn.RNN(self.INPUT_SIZE, 128, batch_first=True)
-        self.linear = nn.Linear(128, 100)
-        self.tanh = nn.Tanh()
-        #self.pool = nn.MaxPool1d(64)
-        self.linear2 = nn.Linear(100, classes)
-        self.softmax = nn.Softmax()
+        super(CypherDetectorRNNModel, self).__init__()
+
+        self.gru = nn.GRU(16, 8, batch_first=True, num_layers=2, dropout=0.3)
+        self.linear1 = nn.Linear(128, classes)
+        self.flatten = nn.Flatten()
+        self.softmax = nn.Softmax(dim=1)
 
     def forward(self, batch):
-        batch, _ = self.rnn(batch)
-        batch = self.linear(batch)
-        batch = self.tanh(batch)
-        batch = self.linear2(batch)
+        batch, _ = self.gru(batch)
+        batch = self.flatten(batch)
+        batch = self.linear1(batch)
+        batch = self.softmax(batch)
+        return batch
+
+
+class CypherDetectorSimpleModel(nn.Module):
+    def __init__(self, classes):
+        super(CypherDetectorSimpleModel, self).__init__()
+
+        self.flatten = nn.Flatten()
+        self.linear1 = nn.Linear(256, classes)
+        self.softmax = nn.Softmax(dim=1)
+
+    def forward(self, batch):
+        batch = self.flatten(batch)
+        batch = self.linear1(batch)
         batch = self.softmax(batch)
         return batch
