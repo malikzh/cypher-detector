@@ -39,11 +39,11 @@ def model_eval(S_u, S_b, q, k):
 k = 1.5
 q_min = 0.44
 q_max = 0.85
-r_min = 0.2
-r_max = 2.5
+r_min = 0.9
+r_max = 3.4
 #######################
 
-quantity = 1000000
+quantity = 10000000
 balance = 1000000
 
 total = {
