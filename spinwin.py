@@ -36,14 +36,14 @@ def model_eval(S_u, S_b, q, k):
 
 
 # Main Model parameters
-k = 2.0
+k = 1.5
 q_min = 0.44
 q_max = 0.85
 r_min = 0.2
 r_max = 2.5
 #######################
 
-quantity = 10000000
+quantity = 1000000
 balance = 1000000
 
 total = {
@@ -54,6 +54,8 @@ total = {
     'user_balance': balance,
     'bot_balance': balance,
 }
+
+bot_start_balance = total['bot_balance']
 
 for i in range(quantity):
     S_u = round(random.uniform(1, 2), 2)
@@ -88,3 +90,4 @@ print("Bot income: ", total['W_b'])
 print("Bot account: ", round(total['bot_balance'], 2))
 print("User account: ", round(total['user_balance'], 2))
 print(f"Bot wins percent: {round(total['bot_wins'] / quantity * 100.0, 2)}%")
+print(f"Bot profit: {round((total['bot_balance'] - bot_start_balance) / bot_start_balance * 100.0, 2)}%")
