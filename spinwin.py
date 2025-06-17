@@ -37,7 +37,7 @@ def model_eval(S_u, S_b, q, k):
 
 # Main Model parameters
 k = 1.5
-q_min = 0.44
+q_min = 0.49
 q_max = 0.85
 r_min = 0.9
 r_max = 3.4
@@ -81,7 +81,7 @@ for i in range(quantity):
 
     total['W_u'] += result['W_u']
     total['W_b'] += result['W_b']
-    E_B_sum += (S_u*S_b*(k-1.0))/(S_u + k*S_b)
+    E_B_sum += (S_b*S_u*k*q - S_u*S_b)/(S_u + k*S_b)
 
 E_B = E_B_sum / quantity
 
