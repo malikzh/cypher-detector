@@ -81,7 +81,7 @@ for i in range(quantity):
 
     total['W_u'] += result['W_u']
     total['W_b'] += result['W_b']
-    E_B_sum += (S_b*S_u*k*q - S_u*S_b)/(S_u + k*S_b)
+    E_B_sum += ((k*q - 1)*S_b*S_u)/(S_u + k*S_b)
 
 E_B = E_B_sum / quantity
 
