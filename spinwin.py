@@ -57,6 +57,8 @@ total = {
 
 bot_start_balance = total['bot_balance']
 
+E_B_sum = 0
+
 for i in range(quantity):
     S_u = round(random.uniform(1, 2), 2)
     r = S_u * random.uniform(r_min, r_max)
@@ -79,6 +81,9 @@ for i in range(quantity):
 
     total['W_u'] += result['W_u']
     total['W_b'] += result['W_b']
+    E_B_sum += (S_u*S_b*(k-1.0))/(S_u + k*S_b)
+
+E_B = E_B_sum / quantity
 
 # Print totals
 print("--- TOTAL ---")
@@ -91,3 +96,4 @@ print("Bot account: ", round(total['bot_balance'], 2))
 print("User account: ", round(total['user_balance'], 2))
 print(f"Bot wins percent: {round(total['bot_wins'] / quantity * 100.0, 2)}%")
 print(f"Bot profit: {round((total['bot_balance'] - bot_start_balance) / bot_start_balance * 100.0, 2)}%")
+print("E(B) = ", E_B_sum)
