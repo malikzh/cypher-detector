@@ -1,33 +1,29 @@
-def f_test(k,q,r):
-    return (k*q-1)*r/(1+k*r)
-
-q = 0.77
-r = 1.08
-
-for k in [0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.2, 1.5, 1.7, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0]:
-    E_B = round(f_test(k, q, r), 4)
-    P_BQ = round(r / (1 + k*r), 4)
-    P_B = round(q * P_BQ, 4)
-    print(f"{k} & {P_B} & {E_B} \\\\")
-
-exit()
 from scipy.optimize import minimize
 import numpy as np
 np.set_printoptions(suppress=True)
 
 def f(x):
-    q, r = x
-    return abs((1.5*q-1)*r/(1+1.5*r))
+    k, q, r = x
+    S_u = 0.045
+    S_b = r
+    return abs(((k*q - 1) * S_u * S_b) / (S_u + k*S_b))
 
-def f_nonabs(x):
-    q, r = x
-    return (1.5*q-1)*r/(1+1.5*r)
+def ftest(k, q, r):
+    S_u = 0.045
+    S_b = r
+    return ((k*q - 1) * S_u * S_b) / (S_u + k*S_b)
 
-bounds = [(0.49, 0.85), (0.9, 3.4)]
-res = minimize(f, x0=[0.5, 1.0], bounds=bounds, method='SLSQP')
+bounds = [(0, 21.5), (0.5, 1), (0.5, 1)]
+res = minimize(f, x0=[1.5, 1, 1], bounds=bounds, method='SLSQP')
 print(res)
 
-q = round(res.x[0] + 0.1, 2)
-r = round(res.x[1] + 0.1, 2)
-print("Result: {:.20f}".format(f_nonabs([q, r])))
-print("Numbers: q={:.2f}, r={:.2f}".format(q, r))
+answer = res.x
+
+k = round(answer[0], 4)
+q = round(answer[1], 4) + 0.01
+r = round(answer[2], 4)
+
+print("k = {:.4f}".format(k))
+print("q = {:.4f}".format(q))
+print("r = {:.4f}".format(r))
+print("E(B) = {:.20f}".format(ftest(k, q, r)))
