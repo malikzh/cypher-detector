@@ -5,6 +5,9 @@ from cryptography.hazmat.primitives import padding
 from cryptography.hazmat.backends import default_backend
 
 class AesEncoder(Encoder):
+    def __init__(self):
+        self.backend = default_backend()
+
     def encrypt(self, text: bytes, key: bytes) -> bytes:
         """Шифрование AES в режиме CBC"""
         # Генерация IV (16 байт для AES)
