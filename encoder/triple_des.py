@@ -26,3 +26,6 @@ class TripleDesEncoder(Encoder):
         
         # Возвращаем IV + зашифрованные данные
         return ciphertext
+    
+    def generate_key(self) -> bytes:
+        return os.urandom(24)

@@ -13,3 +13,6 @@ class KuznechikEncoder(Encoder):
                                         pad_mode=gostcrypto.gostcipher.PAD_MODE_1)
 
         return b"" + cipher_obj.encrypt(text)
+    
+    def generate_key(self) -> bytes:
+        return os.urandom(32)

@@ -1,6 +1,7 @@
 from . import Encoder
 from .implementation.twofish import TwoFish_encrypt
 import binascii
+import os
 
 class TwofishEncoder(Encoder):
     def encrypt(self, text: bytes, key: bytes) -> bytes:
@@ -13,3 +14,6 @@ class TwofishEncoder(Encoder):
         
         # Преобразуем результат из hex в bytes и возвращаем
         return binascii.unhexlify(hex_ciphertext.encode('utf-8'))
+    
+    def generate_key(self) -> bytes:
+        return os.urandom(32)
