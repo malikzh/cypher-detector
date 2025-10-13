@@ -1,0 +1,11 @@
+import torch
+
+def get_configuration():
+    return {
+        'BATCH_SIZE': 128,
+        'LEARNING_RATE': 0.001,
+        'WEIGHT_DECAY': 0.001,
+        'EPOCHS': 100,
+        'DEVICE': 'cuda' if torch.cuda.is_available() else 'cpu',
+        'BYTES_QUANTITY': 256
+    }

@@ -4,7 +4,7 @@ from encoder import ENCODER_FACTORY
 from os import mkdir, urandom
 from os.path import join, abspath, isdir
 
-DATASET_DIR = 'dataset'
+DATASET_DIR = '_dataset'
 QUANTITY = 1000 # Количество шифротекста на каждый класс
 TEXT_SIZE = 1024 # Размер текста в байтах
 
