@@ -14,6 +14,11 @@ log.info("Data generation started.")
 if not isdir(DATASET_DIR):
     mkdir(DATASET_DIR)
 
+# Генерация текстов
+TEXTS = []
+for i in range(QUANTITY):
+    TEXTS.append(i.to_bytes(TEXT_SIZE, byteorder="big"))
+
 
 for enc_name, enc_factory in ENCODER_FACTORY.items():
     log.info(f"Generating data for {enc_name}...")
@@ -30,7 +35,7 @@ for enc_name, enc_factory in ENCODER_FACTORY.items():
         log.info(f"  Generating {i+1}/{QUANTITY} item...")
 
         key = encoder.generate_key()
-        text = urandom(TEXT_SIZE)
+        text = TEXTS[i]
 
         ciphertext = encoder.encrypt(text, key)
 

@@ -15,7 +15,7 @@ import encoder.kuznechik as kuznechik
 
 ENCODER_FACTORY = {
     'AES': lambda: aes.AesEncoder(),
-    'TwoFish': lambda: twofish.TwofishEncoder(),
+    'Twofish': lambda: twofish.TwofishEncoder(),
     '3DES': lambda: triple_des.TripleDesEncoder(),
     'Kuznechik': lambda: kuznechik.KuznechikEncoder(),
 }

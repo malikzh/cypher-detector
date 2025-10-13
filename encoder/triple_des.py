@@ -25,7 +25,7 @@ class TripleDesEncoder(Encoder):
         ciphertext = encryptor.update(padded_data) + encryptor.finalize()
         
         # Возвращаем IV + зашифрованные данные
-        return ciphertext
+        return iv + ciphertext
     
     def generate_key(self) -> bytes:
         return os.urandom(24)

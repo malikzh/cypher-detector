@@ -1,52 +1,47 @@
-import numpy as np
 import torch
+from torch.utils.data import Dataset
 from os import listdir
-from os.path import isfile, join
-from pathlib import Path
-from config import get_configuration
+from os.path import join
+import numpy as np
 
-CFG = get_configuration()
+class Dataset(Dataset):
+    def __init__(self, root="_dataset"):
+        self.class2id = {
+            "3DES": 0,
+            "AES": 1,
+            "Kuznechik": 2,
+            "TwoFish": 3,
+        }
+        self.samples = []  # список (bytes_tensor[int64], length:int, label:int)
 
-
-class Dataset(torch.utils.data.Dataset):
-    PATH = '_dataset'
-    ITEMS = []
-    CLASSES = {
-        '3DES': np.array(     [1.0, 0.0, 0.0, 0.0]),
-        'AES': np.array(      [0.0, 1.0, 0.0, 0.0]),
-        'Kuznechik': np.array([0.0, 0.0, 1.0, 0.0]),
-        'TwoFish': np.array(  [0.0, 0.0, 0.0, 1.0]),
-    }
-
-    def __init__(self, file_full_path=None):
-        for classname, Y in self.CLASSES.items():
-            class_path = join(self.PATH, classname)
-
+        for cls_name, y in self.class2id.items():
+            class_path = join(root, cls_name)
             for filename in listdir(class_path):
-                if not filename.endswith('.bin'):
+                if not filename.endswith(".bin"):
                     continue
-
-                file_path = join(class_path, filename)
-                with open(file_path, 'rb') as f:
-                    arr = np.frombuffer(f.read(), dtype=np.uint8)
-                    X = (arr == 255).astype(np.float32)
-                    self.ITEMS.append((X, Y))
-
-        max_len = max(len(X) for X, _ in self.ITEMS)
-
-        padded_items = []
-        for X, Y in self.ITEMS:
-            if len(X) < max_len:
-                padded = np.pad(X, (0, max_len - len(X)), mode="constant")
-            else:
-                padded = X
-            padded_items.append((padded, Y))
-
-        self.ITEMS = padded_items
+                fp = join(class_path, filename)
+                with open(fp, "rb") as f:
+                    data = f.read()
+                # Сырой шифртекст в байтах: 0..255
+                arr = np.frombuffer(data, dtype=np.uint8)
+                seq = torch.from_numpy(arr.astype(np.int64))  # [L], dtype long для Embedding
+                self.samples.append((seq, len(seq), y))
 
     def __len__(self):
-        return len(self.ITEMS)
+        return len(self.samples)
 
-    def __getitem__(self, index):
-        item = self.ITEMS[index]
-        return np.reshape(item[0], (CFG['SEQUENCE_LENGTH'], 20)), item[1]
+    def __getitem__(self, idx):
+        seq, L, y = self.samples[idx]
+        return seq, L, y
+
+from torch.nn.utils.rnn import pad_sequence
+
+def collate_varlen(batch):
+    # batch: list of (seq[L_i], L_i, y_i)
+    seqs, lengths, labels = zip(*batch)
+    lengths = torch.tensor(lengths, dtype=torch.long)
+    labels  = torch.tensor(labels,  dtype=torch.long)
+
+    # паддим справа нулями (0 — норм, мы всё равно эмбеддим байты)
+    padded = pad_sequence(seqs, batch_first=True, padding_value=0)  # [B, max_len]
+    return padded, lengths, labels

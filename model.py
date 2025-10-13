@@ -1,60 +1,30 @@
-from torch import nn
-from config import get_configuration
+import torch.nn as nn
 
-CFG = get_configuration()
+class CipherClassifier(nn.Module):
+    def __init__(self, num_classes=4, d_model=64, hidden=128, num_layers=2, bidir=False, dropout=0.2):
+        super().__init__()
+        self.embed = nn.Embedding(256, d_model)  # вход — байт 0..255
+        self.gru = nn.GRU(
+            input_size=d_model,
+            hidden_size=hidden,
+            num_layers=num_layers,
+            batch_first=True,
+            bidirectional=bidir,
+            dropout=dropout if num_layers > 1 else 0.0,
+        )
+        out_dim = hidden * (2 if bidir else 1)
+        self.head = nn.Sequential(
+            nn.Dropout(0.2),
+            nn.Linear(out_dim, num_classes)
+        )
 
-class CypherDetectorTransformerModel(nn.Module):
-    def __init__(self, classes):
-        super(CypherDetectorTransformerModel, self).__init__()
-
-        seq_len = CFG['SEQUENCE_LENGTH']
-        hidden_size = 32
-        nhead = 10
-        num_layers = 2
-
-        encoder_layer = nn.TransformerEncoderLayer(d_model=20, nhead=nhead, dim_feedforward=hidden_size, dropout=0.3, batch_first=True)
-        self.transformer_encoder = nn.TransformerEncoder(encoder_layer, num_layers=num_layers)
-        self.flatten = nn.Flatten()
-        self.linear1 = nn.Linear(20 * seq_len, classes)
-        self.softmax = nn.Softmax(dim=1)
-
-    def forward(self, batch):
-        batch = self.transformer_encoder(batch)
-        batch = self.flatten(batch)
-        batch = self.linear1(batch)
-        batch = self.softmax(batch)
-        return batch
-
-class CypherDetectorRNNModel(nn.Module):
-    def __init__(self, classes):
-        super(CypherDetectorRNNModel, self).__init__()
-
-        seq_len = CFG['SEQUENCE_LENGTH']
-        hidden_size = 32
-
-        self.gru = nn.GRU(20, hidden_size, batch_first=True, num_layers=2, dropout=0.3, bidirectional=True)
-        self.flatten = nn.Flatten()
-        self.linear1 = nn.Linear(hidden_size * seq_len * 2, classes)
-        self.softmax = nn.Softmax(dim=1)
-
-    def forward(self, batch):
-        batch, _ = self.gru(batch)
-        batch = self.flatten(batch)
-        batch = self.linear1(batch)
-        batch = self.softmax(batch)
-        return batch
-
-
-class CypherDetectorSimpleModel(nn.Module):
-    def __init__(self, classes):
-        super(CypherDetectorSimpleModel, self).__init__()
-
-        self.flatten = nn.Flatten()
-        self.linear1 = nn.Linear(256, classes)
-        self.softmax = nn.Softmax(dim=1)
-
-    def forward(self, batch):
-        batch = self.flatten(batch)
-        batch = self.linear1(batch)
-        batch = self.softmax(batch)
-        return batch
+    def forward(self, padded, lengths):
+        # padded: [B, T], lengths: [B]
+        x = self.embed(padded)  # [B, T, d_model]
+        packed = nn.utils.rnn.pack_padded_sequence(
+            x, lengths.cpu(), batch_first=True, enforce_sorted=False
+        )
+        packed_out, h_n = self.gru(packed)
+        # h_n: [num_layers * num_dirs, B, hidden]
+        h_last = h_n[-1] if self.gru.bidirectional is False else torch.cat([h_n[-2], h_n[-1]], dim=1)
+        return self.head(h_last)  # [B, num_classes] — логиты, без softmax

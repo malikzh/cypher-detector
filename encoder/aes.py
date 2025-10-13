@@ -24,7 +24,7 @@ class AesEncoder(Encoder):
         # Шифрование
         ciphertext = encryptor.update(padded_data) + encryptor.finalize()
         
-        return ciphertext
+        return iv + ciphertext
     
     def generate_key(self) -> bytes:
         return os.urandom(32)
