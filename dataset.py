@@ -3,6 +3,7 @@ from torch.utils.data import Dataset
 from os import listdir
 from os.path import join
 import numpy as np
+from torch.nn.utils.rnn import pad_sequence
 
 class Dataset(Dataset):
     def __init__(self, root="_dataset"):
@@ -34,14 +35,31 @@ class Dataset(Dataset):
         seq, L, y = self.samples[idx]
         return seq, L, y
 
-from torch.nn.utils.rnn import pad_sequence
+MAX_T = 4096
 
 def collate_varlen(batch):
-    # batch: list of (seq[L_i], L_i, y_i)
     seqs, lengths, labels = zip(*batch)
-    lengths = torch.tensor(lengths, dtype=torch.long)
-    labels  = torch.tensor(labels,  dtype=torch.long)
 
-    # паддим справа нулями (0 — норм, мы всё равно эмбеддим байты)
-    padded = pad_sequence(seqs, batch_first=True, padding_value=0)  # [B, max_len]
-    return padded, lengths, labels
+    fixed = []
+    fixed_L = []
+    for s, L in zip(seqs, lengths):
+        # защита от пустых
+        if L is None or L <= 0 or s.numel() == 0:
+            s = torch.zeros(1, dtype=torch.long); L = 1
+
+        # cap/окно
+        if L > MAX_T:
+            start = np.random.randint(0, L - MAX_T + 1)
+            s = s[start:start+MAX_T]
+            L = MAX_T
+        else:
+            # на всякий — вдруг за пределами
+            s = s[:L]
+
+        fixed.append(s)
+        fixed_L.append(int(min(L, s.numel())))
+
+    lengths_t = torch.tensor(fixed_L, dtype=torch.long)
+    padded = pad_sequence(fixed, batch_first=True, padding_value=0)
+    labels_t = torch.tensor(labels, dtype=torch.long)
+    return padded, lengths_t, labels_t

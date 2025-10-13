@@ -7,13 +7,20 @@ from dataset import Dataset, collate_varlen
 from model import CipherClassifier
 from config import get_configuration
 
+def get_current_device():
+    if torch.backends.mps.is_available():
+        return torch.device("mps")
+    elif torch.cuda.is_available():
+        return torch.device("cuda")
+    else:
+        return torch.device("cpu")
 
 def main():
     # --- init ---
     writer = SummaryWriter()
     cfg = get_configuration()
 
-    device = torch.device(cfg.get('DEVICE', 'cuda' if torch.cuda.is_available() else 'cpu'))
+    device = get_current_device()
     print(f'Selected device: {device}')
 
     seed = int(cfg.get('SEED', 42))
@@ -65,6 +72,8 @@ def main():
         dropout=float(cfg.get('DROPOUT', 0.2)),
     ).to(device)
 
+    # summary(model, input_size=(1056, 64), device="mps")
+
     lr = float(cfg.get('LEARNING_RATE', 3e-4))
     wd = float(cfg.get('WEIGHT_DECAY', 1e-4))
     optimizer = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=wd)
@@ -86,7 +95,6 @@ def main():
         for padded, lengths, labels in train_loader:
             # move to device
             padded = padded.to(device, non_blocking=True)
-            lengths = lengths.to(device, non_blocking=True)
             labels = labels.to(device, non_blocking=True)
 
             optimizer.zero_grad(set_to_none=True)
