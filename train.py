@@ -2,7 +2,7 @@
 
 from torch.utils.data import DataLoader, random_split
 from dataset import Dataset
-from model import CypherDetectorRNNModel, CypherDetectorSimpleModel
+from model import CypherDetectorRNNModel, CypherDetectorTransformerModel
 from config import get_configuration
 import torch
 
@@ -25,7 +25,7 @@ val_loader = DataLoader(val_dataset, batch_size=cfg['BATCH_SIZE'], generator=tor
 
 
 # prepare model
-model = CypherDetectorRNNModel(len(dataset.CLASSES))
+model = CypherDetectorTransformerModel(len(dataset.CLASSES))
 optimizer = torch.optim.Adam(model.parameters(), lr=cfg['LEARNING_RATE'], weight_decay=cfg['WEIGHT_DECAY'])
 loss_fn = torch.nn.CrossEntropyLoss()
 best_loss = float('inf')

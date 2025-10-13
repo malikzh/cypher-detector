@@ -6,6 +6,7 @@ def get_configuration():
         'LEARNING_RATE': 0.001,
         'WEIGHT_DECAY': 0.001,
         'EPOCHS': 100,
+        'SEQUENCE_LENGTH': 52,
         'DEVICE': 'cuda' if torch.cuda.is_available() else 'cpu',
         'BYTES_QUANTITY': 256
     }

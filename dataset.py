@@ -3,6 +3,9 @@ import torch
 from os import listdir
 from os.path import isfile, join
 from pathlib import Path
+from config import get_configuration
+
+CFG = get_configuration()
 
 
 class Dataset(torch.utils.data.Dataset):
@@ -46,4 +49,4 @@ class Dataset(torch.utils.data.Dataset):
 
     def __getitem__(self, index):
         item = self.ITEMS[index]
-        return np.reshape(item[0], (52, 20)), item[1]
+        return np.reshape(item[0], (CFG['SEQUENCE_LENGTH'], 20)), item[1]

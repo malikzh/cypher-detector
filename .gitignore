@@ -5,3 +5,4 @@ _dataset/
 __pycache__
 /venv/
 /runs/
+*.pth
