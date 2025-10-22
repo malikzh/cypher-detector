@@ -30,7 +30,7 @@ class CipherClassifier(nn.Module):
         )
 
     def forward(self, x):
-        x = self.embed(x).contiguous()
+        x = self.embed(x)
         x_8 = self.conv1d_8(x)
         x_16 = self.conv1d_16(x)
 

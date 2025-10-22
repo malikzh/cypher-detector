@@ -68,6 +68,7 @@ def main():
 
     model = CipherClassifier(
         num_classes=num_classes,
+        num_channels=num_channels,
         d_model=d_model,
         hidden=hidden,
         num_layers=num_layers,
