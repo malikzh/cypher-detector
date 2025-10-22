@@ -5,9 +5,9 @@ from os import mkdir, urandom
 from os.path import join, abspath, isdir
 
 DATASET_DIR = '_dataset'
-QUANTITY = 1024  # Количество шифротекста на каждый класс
+QUANTITY = 4096  # Количество шифротекста на каждый класс
 TEXT_SIZE = 1024  # Размер текста в байтах
-UPDATE_IV_AND_KEY_EVERY = 64  # Каждые n раз обновляем ключ и IV
+UPDATE_IV_AND_KEY_EVERY = 256  # Каждые n раз обновляем ключ и IV
 
 log.info("Data generation started.")
 
