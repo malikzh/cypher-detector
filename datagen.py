@@ -1,16 +1,15 @@
 #!/usr/bin/env python3
-from  loguru import logger as log
+from loguru import logger as log
 from encoder import ENCODER_FACTORY
 from os import mkdir, urandom
 from os.path import join, abspath, isdir
 
 DATASET_DIR = '_dataset'
-QUANTITY = 1024 # Количество шифротекста на каждый класс
-TEXT_SIZE = 1024 # Размер текста в байтах
-UPDATE_IV_AND_KEY_EVERY = 16 # Каждые n раз обновляем ключ и IV
+QUANTITY = 1024  # Количество шифротекста на каждый класс
+TEXT_SIZE = 1024  # Размер текста в байтах
+UPDATE_IV_AND_KEY_EVERY = 64  # Каждые n раз обновляем ключ и IV
 
 log.info("Data generation started.")
-
 
 if not isdir(DATASET_DIR):
     mkdir(DATASET_DIR)
@@ -30,7 +29,7 @@ for enc_name, enc_factory in ENCODER_FACTORY.items():
     encoder = enc_factory()
 
     for i in range(QUANTITY):
-        log.info(f"  [{enc_name}] Generating {i+1}/{QUANTITY} item...")
+        log.info(f"  [{enc_name}] Generating {i + 1}/{QUANTITY} item...")
         text = TEXTS[i]
 
         if i % UPDATE_IV_AND_KEY_EVERY == 0:
@@ -40,7 +39,7 @@ for enc_name, enc_factory in ENCODER_FACTORY.items():
         ciphertext = encoder.encrypt(text)
 
         # Сохраняем зашифрованные данные в файл
-        with open(join(dir_path, f"{i+1}.bin"), "wb") as f:
+        with open(join(dir_path, f"{i + 1}.bin"), "wb") as f:
             f.write(ciphertext)
 
 log.info("Data generation completed.")
