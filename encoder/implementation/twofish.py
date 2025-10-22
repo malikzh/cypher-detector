@@ -617,31 +617,63 @@ def output_whitening2(formatted_ciphertext, subkeys_K):
 # Returns:
 #   result - ciphertext (hex in string)
 
-def TwoFish_encrypt(Plaintext, Raw_Key, mode):
+# --- NEW: helper to prepare IV the same way as PT/CT are formatted ---
+def _prepare_iv(iv):
+    """
+    Returns a 128-bit block (32 hex chars) formatted the same way as format_Plaintext(),
+    i.e., with per-word byte-swapping via format_CT inside format_Plaintext.
+    If iv is None -> returns '0'*32.
+    """
+    if iv is None:
+        return "0" * 32
     try:
-        int(Raw_Key, 16)  
+        int(iv, 16)
+    except ValueError:
+        raise Exception("Please input only hexadecimal value as IV.")
+
+    # Reuse your formatting pipeline so CBC XOR happens in the same byte order.
+    iv_blocks = format_Plaintext(iv)
+    if not iv_blocks:
+        return "0" * 32
+    # If user passed more than 128 bits, we only take the first block.
+    return iv_blocks[0]
+
+
+# ---------------------- UPDATED: ENCRYPT ---------------------- #
+def TwoFish_encrypt(Plaintext, Raw_Key, mode, iv=None):
+    """
+    Encrypts with Twofish.
+    Plaintext, Raw_Key: hex strings
+    mode: 'ECB' or 'CBC'
+    iv: optional hex string (128-bit). Used only for CBC. If None, IV=0^128.
+    """
+    try:
+        int(Raw_Key, 16)
     except ValueError:
         raise Exception("Please input only hexadecimal value as key.")
     try:
-        int(Plaintext, 16)  
+        int(Plaintext, 16)
     except ValueError:
         raise Exception("Please input only hexadecimal value as plaintext.")
 
-    if ((mode != 'ECB') and (mode != "CBC")):
+    if mode not in ('ECB', 'CBC'):
         raise Exception("Choose ECB or CBC as mode")
 
     Key = format_Key(Raw_Key)
     PT = format_Plaintext(Plaintext)
     CT = []
-    
+
     Me, Mo, S = key_Schedule(Key)
     K = generate_K(Me, Mo, 16)
 
-    CT_i = "0"
+    # IV handling for CBC
+    CT_i = _prepare_iv(iv) if mode == "CBC" else "0" * 32
 
     for plaintext in PT:
-        if (mode == "CBC"):
+        # CBC: XOR with previous ciphertext (or IV for the first block)
+        if mode == "CBC":
             plaintext = hex(int(plaintext, 16) ^ int(CT_i, 16))[2:].zfill(32)
+
         R0, R1, R2, R3 = input_whitening2(plaintext, K)
 
         F0, F1 = F_function(bin(R0)[2:].zfill(32), bin(R1)[2:].zfill(32), 0, K, S)
@@ -660,37 +692,36 @@ def TwoFish_encrypt(Plaintext, Raw_Key, mode):
 
         R0, R1, R2, R3 = output_whitening(R0, R1, C2, C3, K)
 
-        CT_i = format_CT(hex(R0)[2:].zfill(8)) + format_CT(hex(R1)[2:].zfill(8)) + format_CT(hex(R2)[2:].zfill(8)) + format_CT(hex(R3)[2:].zfill(8))
+        CT_i = (
+                format_CT(hex(R0)[2:].zfill(8))
+                + format_CT(hex(R1)[2:].zfill(8))
+                + format_CT(hex(R2)[2:].zfill(8))
+                + format_CT(hex(R3)[2:].zfill(8))
+        )
         CT.append(CT_i)
 
-    result = ""
-    for block in CT:
-        result += block
+    result = "".join(CT)
     return result.upper()
 
-#---------------------------------------------------------------------------#
 
-# Function that performs decryption:
-#
-# Takes as an input:
-#   Ciphertext - ciphertext (hex in string)
-#   Raw_Key - key that we want to use (hex in string)
-#   mode - ECB or CBC (string)
-# Returns:
-#   result - plaintext (hex in string)
-
-def TwoFish_decrypt(Ciphertext, Raw_Key, mode):
+# ---------------------- UPDATED: DECRYPT ---------------------- #
+def TwoFish_decrypt(Ciphertext, Raw_Key, mode, iv=None):
+    """
+    Decrypts with Twofish.
+    Ciphertext, Raw_Key: hex strings
+    mode: 'ECB' or 'CBC'
+    iv: optional hex string (128-bit). Used only for CBC. If None, IV=0^128.
+    """
     try:
-        int(Raw_Key, 16)  
+        int(Raw_Key, 16)
     except ValueError:
         raise Exception("Please input only hexadecimal value as key.")
-
     try:
-        int(Ciphertext, 16)  
+        int(Ciphertext, 16)
     except ValueError:
         raise Exception("Please input only hexadecimal value as cyphertext.")
 
-    if ((mode != 'ECB') and (mode != "CBC")):
+    if mode not in ('ECB', 'CBC'):
         raise Exception("Choose ECB or CBC as mode")
 
     Key = format_Key(Raw_Key)
@@ -700,38 +731,43 @@ def TwoFish_decrypt(Ciphertext, Raw_Key, mode):
 
     Me, Mo, S = key_Schedule(Key)
     K = generate_K(Me, Mo, 16)
-    last_cipertext = "0"
+
+    # For CBC, start with IV; for ECB, zeros (kept for compatibility)
+    last_cipertext = _prepare_iv(iv) if mode == "CBC" else "0" * 32
 
     for ciphertext in CT:
         R0, R1, C2, C3 = output_whitening2(ciphertext, K)
 
         for i in range(15):
-            F0, F1 = F_function(bin(R0)[2:].zfill(32), bin(R1)[2:].zfill(32), 15-i, K, S)
+            F0, F1 = F_function(bin(R0)[2:].zfill(32), bin(R1)[2:].zfill(32), 15 - i, K, S)
             R2 = ROL(C2, 1, 32) ^ int(F0, 2)
-            R3 = ROR(C3^int(F1, 2), 1, 32)
+            R3 = ROR(C3 ^ int(F1, 2), 1, 32)
 
             C2 = R0
             C3 = R1
             R0 = R2
             R1 = R3
-        
+
         F0, F1 = F_function(bin(R0)[2:].zfill(32), bin(R1)[2:].zfill(32), 0, K, S)
         R2 = ROL(C2, 1, 32) ^ int(F0, 2)
-        R3 = ROR(C3^int(F1, 2), 1, 32)
+        R3 = ROR(C3 ^ int(F1, 2), 1, 32)
 
         R0, R1, R2, R3 = input_whitening(R0, R1, R2, R3, K)
 
-        Pt_i = format_CT(hex(R0)[2:].zfill(8)) + format_CT(hex(R1)[2:].zfill(8)) + format_CT(hex(R2)[2:].zfill(8)) + format_CT(hex(R3)[2:].zfill(8))
+        Pt_i = (
+                format_CT(hex(R0)[2:].zfill(8))
+                + format_CT(hex(R1)[2:].zfill(8))
+                + format_CT(hex(R2)[2:].zfill(8))
+                + format_CT(hex(R3)[2:].zfill(8))
+        )
 
-        if (mode == "CBC"):
+        if mode == "CBC":
+            # XOR with previous ciphertext (or IV for the first block)
             Pt_i = hex(int(Pt_i, 16) ^ int(last_cipertext, 16))[2:].zfill(32)
 
-        PT.append(Pt_i)    
-        last_cipertext = ciphertext  
+        PT.append(Pt_i)
+        # For next iteration in CBC, chain with current ciphertext block
+        last_cipertext = ciphertext
 
-
-
-    result = ""
-    for block in PT:
-        result += block
+    result = "".join(PT)
     return result.upper()
