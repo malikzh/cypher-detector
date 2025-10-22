@@ -4,7 +4,6 @@ from os import listdir
 from os.path import join
 from encoder import ENCODER_FACTORY
 import numpy as np
-import random
 
 
 class Dataset(Dataset):
@@ -12,8 +11,7 @@ class Dataset(Dataset):
         self.samples = []
 
         # Generate class indices
-        one_hot = np.eye(len(ENCODER_FACTORY.keys()))
-        self.classes = {class_name: one_hot[id] for id,class_name in enumerate(ENCODER_FACTORY.keys())}
+        self.classes = list([class_name for class_name in ENCODER_FACTORY.keys()])
 
         # Traverse dataset directory
         for cipher_name in ENCODER_FACTORY.keys():
@@ -33,4 +31,5 @@ class Dataset(Dataset):
         return len(self.samples)
 
     def __getitem__(self, idx):
-        return self.samples[idx][1], torch.from_numpy(self.classes[self.samples[idx][0]]).float()
+        class_id = self.classes.index(self.samples[idx][0])
+        return self.samples[idx][1], torch.tensor(class_id, dtype=torch.long)

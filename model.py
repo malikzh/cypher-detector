@@ -1,24 +1,40 @@
 import torch
 from torch import nn
 
+
 class CipherClassifier(nn.Module):
-    def __init__(self, num_classes=4, d_model=32, hidden=96, num_layers=1, bidir=False, dropout=0.1):
+    def __init__(self, num_classes=4, d_model=32, hidden=96, num_layers=1, dropout=0.1, num_channels=1):
         super().__init__()
         self.embed = nn.Embedding(256, d_model)
-        self.gru = nn.GRU(
-            input_size=d_model, hidden_size=hidden,
-            num_layers=num_layers, batch_first=True,
-            bidirectional=bidir, dropout=dropout,
-        )
-        out_dim = hidden * (2 if bidir else 1)
-        self.head = nn.Sequential(nn.Dropout(dropout), nn.Linear(out_dim, num_classes))
 
-    def forward(self, padded, lengths=None):
-        # padded: [B, T] (long, 0..255)
-        x = self.embed(padded).contiguous()       # [B, T, d_model]; contiguous для MPS
-        out, h_n = self.gru(x)                    # без pack — на MPS стабильнее
-        if self.gru.bidirectional:
-            h_last = torch.cat([h_n[-2], h_n[-1]], dim=1)
-        else:
-            h_last = h_n[-1]
-        return self.head(h_last)                  # логиты
+        self.conv1d_8 = nn.Conv1d(in_channels=num_channels, out_channels=d_model, kernel_size=8, stride=2)
+        self.conv1d_16 = nn.Conv1d(in_channels=num_channels, out_channels=d_model, kernel_size=16, stride=2)
+
+        self.transformerEncoder = nn.Sequential(
+            nn.TransformerEncoder(
+                nn.TransformerEncoderLayer(d_model=54, nhead=6, dim_feedforward=hidden, dropout=dropout,
+                                           activation='relu', batch_first=True),
+                num_layers=num_layers,
+            ),
+            nn.Flatten()
+        )
+
+        self.output = nn.Sequential(
+            nn.Linear(3456, 1500),
+            nn.ReLU(),
+            nn.Dropout(dropout),
+            nn.Linear(1500, 250),
+            nn.ReLU(),
+            nn.Dropout(dropout),
+            nn.Linear(250, num_classes)
+        )
+
+    def forward(self, x):
+        x = self.embed(x).contiguous()
+        x_8 = self.conv1d_8(x)
+        x_16 = self.conv1d_16(x)
+
+        x = torch.concat([x_8, x_16], dim=2)
+        x = self.transformerEncoder(x)
+
+        return self.output(x)
