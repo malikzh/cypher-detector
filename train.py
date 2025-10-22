@@ -27,10 +27,9 @@ def main():
     split_ratio = float(cfg.get('TRAIN_VAL_SPLIT', 0.8))
     epochs = int(cfg.get('EPOCHS', 10))
     batch_size = int(cfg.get('BATCH_SIZE', 64))
-    d_model = int(cfg.get('D_MODEL', 64))
+    d_model = int(cfg.get('D_MODEL', 16))
     hidden = int(cfg.get('HIDDEN', 32))
     num_layers = int(cfg.get('NUM_LAYERS', 2))
-    num_channels = int(cfg.get('NUM_CHANNELS', 1024))
     dropout = float(cfg.get('DROPOUT', 0.2))
     ckpt_path = cfg.get('CKPT_PATH', 'model.pth')
 
@@ -68,7 +67,6 @@ def main():
 
     model = CipherClassifier(
         num_classes=num_classes,
-        num_channels=num_channels,
         d_model=d_model,
         hidden=hidden,
         num_layers=num_layers,

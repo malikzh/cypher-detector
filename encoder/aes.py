@@ -7,7 +7,7 @@ from cryptography.hazmat.backends import default_backend
 
 class AesEncoder(Encoder):
     def __init__(self):
-        self.iv = bytes(16)
+        self.iv = os.urandom(16)
         self.backend = default_backend()
 
     def encrypt(self, text: bytes, key: bytes) -> bytes:

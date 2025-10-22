@@ -19,6 +19,8 @@ TEXTS = []
 for i in range(QUANTITY):
     TEXTS.append(i.to_bytes(TEXT_SIZE, byteorder="big"))
 
+# Генерация ключей
+KEYS = dict({enc_name:enc_factory().generate_key() for enc_name, enc_factory in ENCODER_FACTORY.items()})
 
 for enc_name, enc_factory in ENCODER_FACTORY.items():
     log.info(f"Generating data for {enc_name}...")
@@ -34,7 +36,7 @@ for enc_name, enc_factory in ENCODER_FACTORY.items():
     for i in range(QUANTITY):
         log.info(f"  Generating {i+1}/{QUANTITY} item...")
 
-        key = encoder.generate_key()
+        key = KEYS[enc_name]
         text = TEXTS[i]
 
         ciphertext = encoder.encrypt(text, key)

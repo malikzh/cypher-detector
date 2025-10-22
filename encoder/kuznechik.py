@@ -5,7 +5,7 @@ import gostcrypto
 
 class KuznechikEncoder(Encoder):
     def __init__(self):
-        self.iv = bytes(16)
+        self.iv = os.urandom(16)
 
     def encrypt(self, text: bytes, key: bytes) -> bytes:
         cipher_obj = gostcrypto.gostcipher.new('kuznechik',
