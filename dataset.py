@@ -29,9 +29,6 @@ class Dataset(Dataset):
                 seq = torch.from_numpy(arr.astype(np.int64))
                 self.samples.append((cipher_name, seq))
 
-        # Shuffle samples to ensure randomness
-        random.shuffle(self.samples)
-
     def __len__(self):
         return len(self.samples)
 
