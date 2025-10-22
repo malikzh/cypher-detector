@@ -1,16 +1,17 @@
 from . import Encoder
 import os
-from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-from cryptography.hazmat.primitives import padding
-from cryptography.hazmat.backends import default_backend
 import gostcrypto
 
+
 class KuznechikEncoder(Encoder):
+    def __init__(self):
+        self.iv = bytes(16)
+
     def encrypt(self, text: bytes, key: bytes) -> bytes:
         cipher_obj = gostcrypto.gostcipher.new('kuznechik',
                                         key,
                                         gostcrypto.gostcipher.MODE_CBC,
-                                        pad_mode=gostcrypto.gostcipher.PAD_MODE_1)
+                                        pad_mode=gostcrypto.gostcipher.PAD_MODE_1, init_vect=self.iv)
 
         return b"" + cipher_obj.encrypt(text)
     

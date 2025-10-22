@@ -5,7 +5,7 @@ from os import mkdir, urandom
 from os.path import join, abspath, isdir
 
 DATASET_DIR = '_dataset'
-QUANTITY = 5000 # Количество шифротекста на каждый класс
+QUANTITY = 2000 # Количество шифротекста на каждый класс
 TEXT_SIZE = 1024 # Размер текста в байтах
 
 log.info("Data generation started.")

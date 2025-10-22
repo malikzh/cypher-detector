@@ -3,6 +3,7 @@ from .implementation.twofish import TwoFish_encrypt
 import binascii
 import os
 
+
 class TwofishEncoder(Encoder):
     def encrypt(self, text: bytes, key: bytes) -> bytes:
         # Преобразуем text и key из bytes в hex string
