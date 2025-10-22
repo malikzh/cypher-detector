@@ -2,9 +2,6 @@ import torch
 from torch import nn
 
 
-import torch
-from torch import nn
-
 class CipherClassifier(nn.Module):
     def __init__(self, num_classes=4, d_model=32, hidden=96, num_layers=1, dropout=0.1):
         super().__init__()
