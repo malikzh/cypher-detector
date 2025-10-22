@@ -1,22 +1,20 @@
 from . import Encoder
 import os
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-from cryptography.hazmat.primitives import padding
 from cryptography.hazmat.backends import default_backend
 
 
 class AesEncoder(Encoder):
     def __init__(self):
-        self.iv = os.urandom(16)
+        self.generate()
         self.backend = default_backend()
 
-    def encrypt(self, text: bytes, key: bytes) -> bytes:
+    def encrypt(self, text: bytes) -> bytes:
         """Шифрование AES в режиме CBC"""
-        assert len(key) == 32, "Key must be 32 bytes for AES-256"
         assert len(text) % 16 == 0, "Text length must be a multiple of 16 bytes for AES"
-        
+
         # Создание cipher
-        cipher = Cipher(algorithms.AES(key), modes.CBC(self.iv), backend=self.backend)
+        cipher = Cipher(algorithms.AES(self.key), modes.CBC(self.iv), backend=self.backend)
         encryptor = cipher.encryptor()
         
         # Шифрование
@@ -24,5 +22,8 @@ class AesEncoder(Encoder):
         
         return ciphertext
     
-    def generate_key(self) -> bytes:
-        return os.urandom(32)
+    def generate_key(self):
+        self.key = os.urandom(32)
+
+    def generate_iv(self):
+        self.iv = os.urandom(16)

@@ -2,11 +2,18 @@ __all__ = ['aes', 'twofish', 'triple_des', 'kuznechik']
 
 
 class Encoder(object):
-    def encrypt(self, text: bytes, key: bytes) -> bytes:
+    def encrypt(self, text: bytes) -> bytes:
         raise NotImplementedError
     
-    def generate_key(self) -> bytes:
+    def generate_key(self):
         raise NotImplementedError
+
+    def generate_iv(self):
+        raise NotImplementedError
+
+    def generate(self):
+        self.generate_key()
+        self.generate_iv()
     
 
 import encoder.aes as aes
