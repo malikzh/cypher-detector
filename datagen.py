@@ -3,11 +3,11 @@ import os
 
 from loguru import logger as log
 from encoder import ENCODER_FACTORY
-from os import mkdir, urandom
-from os.path import join, abspath, isdir
+from os import mkdir
+from os.path import join, isdir
 
 DATASET_DIR = '_dataset'
-QUANTITY = 4096  # Количество шифротекста на каждый класс
+QUANTITY = 1024  # Количество шифротекста на каждый класс
 TEXT_SIZE = 1024  # Размер текста в байтах
 UPDATE_IV_AND_KEY_EVERY = 256  # Каждые n раз обновляем ключ и IV
 
