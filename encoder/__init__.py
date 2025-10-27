@@ -5,15 +5,15 @@ class Encoder(object):
     def encrypt(self, text: bytes) -> bytes:
         raise NotImplementedError
     
-    def generate_key(self):
+    def generate_key(self, key: bytes):
         raise NotImplementedError
 
-    def generate_iv(self):
+    def generate_iv(self, iv: bytes):
         raise NotImplementedError
 
-    def generate(self):
-        self.generate_key()
-        self.generate_iv()
+    def generate(self, key: bytes, iv: bytes):
+        self.generate_key(key)
+        self.generate_iv(iv)
     
 
 import encoder.aes as aes

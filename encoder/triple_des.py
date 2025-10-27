@@ -7,7 +7,6 @@ from cryptography.hazmat.backends import default_backend
 
 class TripleDesEncoder(Encoder):
     def __init__(self):
-        self.generate()
         self.backend = default_backend()
 
     def encrypt(self, text: bytes) -> bytes:
@@ -23,9 +22,9 @@ class TripleDesEncoder(Encoder):
         
         # Возвращаем зашифрованные данные
         return ciphertext
-    
-    def generate_key(self):
-        self.key = os.urandom(24)
 
-    def generate_iv(self):
-        self.iv = os.urandom(8)
+    def generate_key(self, key: bytes):
+        self.key = key[:24]
+
+    def generate_iv(self, iv: bytes):
+        self.iv = iv[:8]

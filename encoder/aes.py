@@ -1,12 +1,10 @@
 from . import Encoder
-import os
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend
 
 
 class AesEncoder(Encoder):
     def __init__(self):
-        self.generate()
         self.backend = default_backend()
 
     def encrypt(self, text: bytes) -> bytes:
@@ -22,8 +20,8 @@ class AesEncoder(Encoder):
         
         return ciphertext
     
-    def generate_key(self):
-        self.key = os.urandom(32)
+    def generate_key(self, key: bytes):
+        self.key = key[:32]
 
-    def generate_iv(self):
-        self.iv = os.urandom(16)
+    def generate_iv(self, iv: bytes):
+        self.iv = iv[:16]

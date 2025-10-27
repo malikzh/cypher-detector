@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+import os
+
 from loguru import logger as log
 from encoder import ENCODER_FACTORY
 from os import mkdir, urandom
@@ -18,7 +20,8 @@ if not isdir(DATASET_DIR):
 TEXTS = list([i.to_bytes(TEXT_SIZE, byteorder="big") for i in range(QUANTITY)])
 
 # Генерация ключа
-
+KEY = os.urandom(32)
+IV = os.urandom(16)
 
 for enc_name, enc_factory in ENCODER_FACTORY.items():
     log.info(f"Generating data for {enc_name}...")
@@ -35,10 +38,7 @@ for enc_name, enc_factory in ENCODER_FACTORY.items():
         log.info(f"  [{enc_name}] Generating {i + 1}/{QUANTITY} item...")
         text = TEXTS[i]
 
-        if i % UPDATE_IV_AND_KEY_EVERY == 0:
-            log.info(f"    [{enc_name}] Updating key and IV...")
-            encoder.generate()
-
+        encoder.generate(KEY, IV) # Генерируем ключ и IV на основе одних их тех же данных
         ciphertext = encoder.encrypt(text)
 
         # Сохраняем зашифрованные данные в файл
