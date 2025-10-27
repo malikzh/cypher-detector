@@ -17,6 +17,9 @@ if not isdir(DATASET_DIR):
 # Генерация текстов
 TEXTS = list([i.to_bytes(TEXT_SIZE, byteorder="big") for i in range(QUANTITY)])
 
+# Генерация ключа
+
+
 for enc_name, enc_factory in ENCODER_FACTORY.items():
     log.info(f"Generating data for {enc_name}...")
 
