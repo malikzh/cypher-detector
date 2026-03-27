@@ -9,7 +9,7 @@ from os.path import join, isdir
 DATASET_DIR = '_dataset'
 QUANTITY = 1024  # Количество шифротекста на каждый класс
 TEXT_SIZE = 1024  # Размер текста в байтах
-UPDATE_IV_AND_KEY_EVERY = 256  # Каждые n раз обновляем ключ и IV
+UPDATE_IV_AND_KEY_EVERY = 32  # Каждые n раз обновляем ключ и IV
 
 log.info("Data generation started.")
 
@@ -20,7 +20,7 @@ if not isdir(DATASET_DIR):
 TEXTS = list([i.to_bytes(TEXT_SIZE, byteorder="big") for i in range(QUANTITY)])
 
 # Генерация ключа
-KEY = os.urandom(32)
+KEYS = list([os.urandom(32) for _ in range(QUANTITY // UPDATE_IV_AND_KEY_EVERY)])
 IV = os.urandom(16)
 
 for enc_name, enc_factory in ENCODER_FACTORY.items():
@@ -38,11 +38,13 @@ for enc_name, enc_factory in ENCODER_FACTORY.items():
         log.info(f"  [{enc_name}] Generating {i + 1}/{QUANTITY} item...")
         text = TEXTS[i]
 
-        encoder.generate(KEY, IV) # Генерируем ключ и IV на основе одних их тех же данных
+        key_id = i // UPDATE_IV_AND_KEY_EVERY
+
+        encoder.generate(KEYS[key_id], IV) # Генерируем ключ и IV на основе одних их тех же данных
         ciphertext = encoder.encrypt(text)
 
         # Сохраняем зашифрованные данные в файл
-        with open(join(dir_path, f"{i + 1}.bin"), "wb") as f:
+        with open(join(dir_path, f"{i + 1}_key{key_id}.bin"), "wb") as f:
             f.write(ciphertext)
 
 log.info("Data generation completed.")

@@ -8,6 +8,7 @@ from model import CipherClassifier
 from config import get_configuration
 from  loguru import logger as log
 from os.path import abspath
+import numpy as np
 
 def get_current_device():
     if torch.cuda.is_available():
@@ -18,7 +19,8 @@ def get_current_device():
         return torch.device("cpu")
 
 def main():
-    writer = SummaryWriter()
+    np.random.seed(42)
+    writer = SummaryWriter(log_dir='runs/scenario_a')
     cfg = get_configuration()
 
     # Load configurations
@@ -31,14 +33,15 @@ def main():
     hidden = int(cfg.get('HIDDEN', 32))
     num_layers = int(cfg.get('NUM_LAYERS', 2))
     dropout = float(cfg.get('DROPOUT', 0.2))
-    ckpt_path = cfg.get('CKPT_PATH', 'model.pth')
+    ckpt_path = cfg.get('CKPT_PATH', 'model_scenario_a.pth')
 
     log.info('Using device: {}'.format(device))
 
     # Подготовка датасета
     log.info("Loading dataset from: {}".format(dataset_path))
     full_dataset = Dataset(root=dataset_path)
-    train_ds, val_ds = random_split(full_dataset, [split_ratio, 1.0 - split_ratio])
+    train_ds, val_ds = random_split(full_dataset, [split_ratio, 1.0 - split_ratio],
+        generator=torch.Generator().manual_seed(42))
 
 
     train_loader = DataLoader(
