@@ -1,4 +1,4 @@
-__all__ = ['aes', 'blowfish.py', 'triple_des', 'kuznechik']
+__all__ = ['aes', 'blowfish', 'triple_des', 'kuznyechik']
 
 
 class Encoder(object):
@@ -19,11 +19,11 @@ class Encoder(object):
 import encoder.aes as aes
 import encoder.blowfish as twofish
 import encoder.triple_des as triple_des
-import encoder.kuznechik as kuznechik
+import encoder.kuznyechik as kuznyechik
 
 ENCODER_FACTORY = {
     'AES': lambda: aes.AesEncoder(),
     'Blowfish': lambda: twofish.BlowfishEncoder(),
     '3DES': lambda: triple_des.TripleDesEncoder(),
-    'Kuznyechik': lambda: kuznechik.KuznechikEncoder(),
+    'Kuznyechik': lambda: kuznyechik.KuznyechikEncoder(),
 }

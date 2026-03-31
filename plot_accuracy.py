@@ -74,9 +74,9 @@ def plot_accuracy_scenario_a(log_dir='runs/scenario_a'):
 
     # Save
     plt.tight_layout()
-    plt.savefig('val_accuracy_scenario_a.pdf', dpi=300, bbox_inches='tight')
+    plt.savefig('results/val_accuracy_scenario_a.pdf', dpi=300, bbox_inches='tight')
     plt.close()
-    print("✓ Saved: val_accuracy_scenario_a.pdf")
+    print("✓ Saved: results/val_accuracy_scenario_a.pdf")
 
 
 def plot_accuracy_scenario_b(log_dir='runs/scenario_b'):
@@ -115,9 +115,9 @@ def plot_accuracy_scenario_b(log_dir='runs/scenario_b'):
 
     # Save
     plt.tight_layout()
-    plt.savefig('val_accuracy_scenario_b.pdf', dpi=300, bbox_inches='tight')
+    plt.savefig('results/val_accuracy_scenario_b.pdf', dpi=300, bbox_inches='tight')
     plt.close()
-    print("✓ Saved: val_accuracy_scenario_b.pdf")
+    print("✓ Saved: results/val_accuracy_scenario_b.pdf")
 
 
 def plot_loss_scenario_a(log_dir='runs/Feb27_16-48-42_Maliks-MacBook-Pro.local'):
@@ -145,9 +145,9 @@ def plot_loss_scenario_a(log_dir='runs/Feb27_16-48-42_Maliks-MacBook-Pro.local')
     plt.xlim(left=1)
 
     plt.tight_layout()
-    plt.savefig('val_loss_scenario_a.pdf', dpi=300, bbox_inches='tight')
+    plt.savefig('results/val_loss_scenario_a.pdf', dpi=300, bbox_inches='tight')
     plt.close()
-    print("✓ Saved: val_loss_scenario_a.pdf")
+    print("✓ Saved: results/val_loss_scenario_a.pdf")
 
 
 def plot_loss_scenario_b(log_dir='runs/scenario_b'):
@@ -175,9 +175,9 @@ def plot_loss_scenario_b(log_dir='runs/scenario_b'):
     plt.xlim(left=1)
 
     plt.tight_layout()
-    plt.savefig('val_loss_scenario_b.pdf', dpi=300, bbox_inches='tight')
+    plt.savefig('results/val_loss_scenario_b.pdf', dpi=300, bbox_inches='tight')
     plt.close()
-    print("✓ Saved: val_loss_scenario_b.pdf")
+    print("✓ Saved: results/val_loss_scenario_b.pdf")
 
 
 if __name__ == '__main__':
@@ -201,6 +201,10 @@ if __name__ == '__main__':
     print("Available log directories:")
     for i, d in enumerate(subdirs):
         print(f"  {i}: {d}")
+
+    # Create dirs
+    if not os.path.isdir("results"):
+        os.makedirs("results")
 
     # Scenario A
     print("\n" + "=" * 60)
@@ -232,8 +236,8 @@ if __name__ == '__main__':
 
     print("\n" + "=" * 60)
     print("Done! Generated PDF files:")
-    print("  - val_accuracy_scenario_a.pdf")
-    print("  - val_loss_scenario_a.pdf")
-    print("  - val_accuracy_scenario_b.pdf")
-    print("  - val_loss_scenario_b.pdf")
+    print("  - results/val_accuracy_scenario_a.pdf")
+    print("  - results/val_loss_scenario_a.pdf")
+    print("  - results/val_accuracy_scenario_b.pdf")
+    print("  - results/val_loss_scenario_b.pdf")
     print("=" * 60)

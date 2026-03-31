@@ -10,6 +10,7 @@ from model import CipherClassifier
 from config import get_configuration
 from loguru import logger as log
 from os.path import abspath
+import os
 
 
 def get_current_device():
@@ -148,6 +149,10 @@ def main():
 
     log.info(f"Classes: {class_names}")
 
+    # Create dirs
+    if not os.path.isdir("results"):
+        os.makedirs("results")
+
     # ==================== SCENARIO A ====================
     log.info("\n" + "=" * 60)
     log.info("SCENARIO A: Key-Reuse with Random Split")
@@ -192,7 +197,7 @@ def main():
         class_names=class_names,
         accuracy=acc_a,
         title='Scenario A: Key-Reuse with Random Split',
-        save_path='confusion_scenario_a.pdf'
+        save_path='results/confusion_scenario_a.pdf'
     )
 
     # ==================== SCENARIO B ====================
@@ -236,7 +241,7 @@ def main():
         class_names=class_names,
         accuracy=acc_b,
         title='Scenario B: Key-Disjoint Split',
-        save_path='confusion_scenario_b.pdf'
+        save_path='results/confusion_scenario_b.pdf'
     )
 
     # ==================== SUMMARY ====================

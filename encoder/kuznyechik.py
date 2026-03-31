@@ -3,7 +3,7 @@ import os
 import gostcrypto
 
 
-class KuznechikEncoder(Encoder):
+class KuznyechikEncoder(Encoder):
     def encrypt(self, text: bytes) -> bytes:
         cipher_obj = gostcrypto.gostcipher.new('kuznechik',
                                         self.key,

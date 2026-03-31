@@ -7,7 +7,7 @@ Source code for the paper **"Ciphertext-Only Classification of Encryption Algori
 
 ## 📄 Abstract
 
-This repository contains the complete implementation of a deep learning approach for identifying encryption algorithms (AES, 3DES, Blowfish, Kuznechik) from ciphertext-only data. The study demonstrates that classification accuracy depends critically on cryptographic parameter reuse: under key reuse, the model achieves 96.09% accuracy, but under proper key rotation, accuracy collapses to 33.33% (random baseline), validating the security of modern block ciphers under correct key management.
+This repository contains the complete implementation of a deep learning approach for identifying encryption algorithms (AES, 3DES, Blowfish, Kuznyechik) from ciphertext-only data. The study demonstrates that classification accuracy depends critically on cryptographic parameter reuse: under key reuse, the model achieves 96.09% accuracy, but under proper key rotation, accuracy collapses to 33.33% (random baseline), validating the security of modern block ciphers under correct key management.
 
 ## 🚀 Quick Start
 
