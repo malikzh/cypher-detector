@@ -25,5 +25,5 @@ ENCODER_FACTORY = {
     'AES': lambda: aes.AesEncoder(),
     'Blowfish': lambda: twofish.BlowfishEncoder(),
     '3DES': lambda: triple_des.TripleDesEncoder(),
-    'Kuznechik': lambda: kuznechik.KuznechikEncoder(),
+    'Kuznyechik': lambda: kuznechik.KuznechikEncoder(),
 }
