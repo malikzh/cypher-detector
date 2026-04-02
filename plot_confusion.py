@@ -71,7 +71,6 @@ def evaluate_model(model, dataloader, device):
     with torch.no_grad():
         for X, labels in dataloader:
             X = X.to(device, non_blocking=True)
-            labels = labels.to(device, non_blocking=True)
 
             Y_pred = model(X)
             pred_y = Y_pred.argmax(dim=1)
