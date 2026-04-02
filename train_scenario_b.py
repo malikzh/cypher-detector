@@ -20,7 +20,7 @@ def get_current_device():
         return torch.device("cpu")
 
 
-def create_key_disjoint_split(dataset, train_ratio=0.8, val_ratio=0.1):
+def create_key_disjoint_split(dataset, train_ratio=0.8, val_ratio=0.2):
     """
     Split dataset by key_id to ensure no key overlap between train/val/test
     """
@@ -49,30 +49,24 @@ def create_key_disjoint_split(dataset, train_ratio=0.8, val_ratio=0.1):
 
     train_keys = set(unique_keys[:n_train])
     val_keys = set(unique_keys[n_train:n_train + n_val])
-    test_keys = set(unique_keys[n_train + n_val:])
 
     log.info(f"Train keys: {len(train_keys)}")
     log.info(f"Val keys: {len(val_keys)}")
-    log.info(f"Test keys: {len(test_keys)}")
 
     # Create index lists
     train_indices = []
     val_indices = []
-    test_indices = []
 
     for key_id, indices in samples_by_key.items():
         if key_id in train_keys:
             train_indices.extend(indices)
         elif key_id in val_keys:
             val_indices.extend(indices)
-        elif key_id in test_keys:
-            test_indices.extend(indices)
 
     log.info(f"Train samples: {len(train_indices)}")
     log.info(f"Val samples: {len(val_indices)}")
-    log.info(f"Test samples: {len(test_indices)}")
 
-    return train_indices, val_indices, test_indices
+    return train_indices, val_indices
 
 
 def main():
@@ -99,10 +93,10 @@ def main():
     full_dataset = Dataset(root=dataset_path)
 
     # Key-disjoint split
-    train_idx, val_idx, test_idx = create_key_disjoint_split(
+    train_idx, val_idx = create_key_disjoint_split(
         full_dataset,
         train_ratio=0.8,
-        val_ratio=0.1
+        val_ratio=0.2
     )
 
     train_ds = Subset(full_dataset, train_idx)

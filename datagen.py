@@ -9,7 +9,7 @@ from os.path import join, isdir
 DATASET_DIR = '_dataset'
 QUANTITY = 1024  # Количество шифротекста на каждый класс
 TEXT_SIZE = 1024  # Размер текста в байтах
-UPDATE_IV_AND_KEY_EVERY = 32  # Каждые n раз обновляем ключ и IV
+UPDATE_IV_AND_KEY_EVERY = 8  # Каждые n раз обновляем ключ и IV
 
 log.info("Data generation started.")
 
