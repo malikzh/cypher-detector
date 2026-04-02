@@ -48,7 +48,7 @@ def create_key_disjoint_split(dataset, train_ratio=0.8, val_ratio=0.2):
     n_val = int(n_keys * val_ratio)
 
     train_keys = set(unique_keys[:n_train])
-    val_keys = set(unique_keys[n_train:n_train + n_val])
+    val_keys = set(unique_keys[n_train:])
 
     log.info(f"Train keys: {len(train_keys)}")
     log.info(f"Val keys: {len(val_keys)}")
